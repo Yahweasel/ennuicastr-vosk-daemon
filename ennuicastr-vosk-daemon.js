@@ -80,7 +80,7 @@ server.on("connection", sock => {
             }
             const fin = rec.finalResult();
             if (fin.result)
-                res = res.concat(fin);
+                res = res.concat(fin.result);
 
             // Return the result
             try {
