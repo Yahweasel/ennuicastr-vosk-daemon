@@ -1,0 +1,4 @@
+model/
+node_modules/
+package-lock.json
+vosk-model-*.zip

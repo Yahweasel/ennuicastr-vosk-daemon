@@ -1,0 +1,14 @@
+{
+  "name": "ennuicastr-vosk-daemon",
+  "version": "1.0.0",
+  "description": "Trivial daemon for using Vosk over a socket",
+  "main": "ennuicastr-vosk-daemon.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yahweasel",
+  "license": "ISC",
+  "dependencies": {
+    "vosk": "^0.3.30"
+  }
+}
