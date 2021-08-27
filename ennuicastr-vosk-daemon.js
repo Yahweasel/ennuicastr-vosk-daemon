@@ -74,9 +74,9 @@ server.on("connection", sock => {
             // Accept it a bit at a time
             let res = [];
             while (wav.length) {
-                if (rec.acceptWaveform(wav.subarray(0, 4096)))
+                if (rec.acceptWaveform(wav.subarray(0, 1024)))
                     res = res.concat(rec.result().result);
-                wav = wav.slice(4096);
+                wav = wav.slice(1024);
             }
             const fin = rec.finalResult();
             if (fin.result)
