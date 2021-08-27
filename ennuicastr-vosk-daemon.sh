@@ -18,6 +18,6 @@ cd "$(dirname "$0")"
 make
 while true
 do
-    ./ennuicastr-vosk-daemon.js 2> /dev/null || true
+    nice -n10 chrt -i 0 ./ennuicastr-vosk-daemon.js 2> /dev/null || true
     sleep 10
 done
