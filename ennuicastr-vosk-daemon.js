@@ -98,13 +98,13 @@ server.on("connection", sock => {
                 if (rec.acceptWaveform(wav.subarray(0, 65536))) {
                     const part = rec.result();
                     if (part.result)
-                        res = res.push(part.result);
+                        res.push(part.result);
                 }
                 wav = wav.slice(65536);
             }
             const fin = rec.finalResult();
             if (fin.result)
-                res = res.push(fin.result);
+                res.push(fin.result);
 
             // Return the result
             try {
