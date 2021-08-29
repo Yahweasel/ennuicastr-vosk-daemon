@@ -34,6 +34,12 @@ server.listen(sockPath);
 
 // And listen
 server.on("connection", sock => {
+    // Make a recognizer
+    let sampleRate = 48000;
+    let rec = new vosk.Recognizer({model, sampleRate});
+    rec.setWords(true);
+
+    // Receive data
     let buf = Buffer.alloc(0);
     sock.on("data", chunk => {
         buf = Buffer.concat([buf, chunk]);
@@ -58,25 +64,40 @@ server.on("connection", sock => {
             if (typeof msg !== "object" || msg === null)
                 return sock.destroy();
 
-            // Only supported command is "vosk", so just get out the data
+            // Check for reset
+            if (msg.c === "reset") {
+                rec = new vosk.Recognizer({model, sampleRate});
+                rec.setWords(true);
+                sock.write('{"result":"ok"}\n');
+                continue;
+            }
+
+            // Otherwise, the command must be "vosk"
+            if (msg.c !== "vosk")
+                continue;
+
+            // Get out the data
             let wav;
             try {
-                wav = new Int16Array(Buffer.from(msg.wav, "base64").buffer);
+                wav = Buffer.from(msg.wav, "base64");
             } catch (ex) {
                 return sock.destroy();
             }
             const sr = msg.sr || 48000;
 
-            // Make a recognizer
-            const rec = new vosk.Recognizer({model, sampleRate: sr});
-            rec.setWords(true);
+            // Check for sample rate change
+            if (sr !== sampleRate) {
+                sampleRate = sr;
+                rec = new vosk.Recognizer({model, sampleRate});
+                rec.setWords(true);
+            }
 
             // Accept it a bit at a time
             let res = [];
             while (wav.length) {
-                if (rec.acceptWaveform(wav.subarray(0, 1024)))
+                if (rec.acceptWaveform(wav.subarray(0, 65536)))
                     res = res.concat(rec.result().result);
-                wav = wav.slice(1024);
+                wav = wav.slice(65536);
             }
             const fin = rec.finalResult();
             if (fin.result)
